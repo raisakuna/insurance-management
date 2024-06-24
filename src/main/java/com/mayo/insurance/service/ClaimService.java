@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -21,6 +22,9 @@ public class ClaimService {
 
     @Autowired
     private ApiResponse<Claim> claimResponse;
+
+    @Autowired
+    private ApiResponse<List<Claim>> findAllClaimResponse;
 
     public ApiResponse<Claim> insertClaim(Claim claim, int policyId){
         InsurancePolicy insuracePolicy = insurancePolicyDAO.getInsuracePolicyById(policyId);
@@ -60,22 +64,43 @@ public class ClaimService {
             throw  new RuntimeException("Claim details not found");
         }
         claimResponse.setStatusCode(HttpStatus.FOUND.value());
-        claimResponse.setMsg("Claim Deleted Succesfully");
+        claimResponse.setMsg("Claim Deleted Successfully");
         claimResponse.setData(claim);
 
         return claimResponse;
     }
 
     public ApiResponse<Claim> updateClaim(Claim claim){
-        Claim updateClaim = claimDAO.deleteClaimId(claim.getClaimId());
+        Claim updateClaim = claimDAO.getByClaimId(claim.getClaimId());
 
         if (Objects.isNull(updateClaim)){
             throw  new RuntimeException("Claim details not found");
         }
-        claimResponse.setStatusCode(HttpStatus.FOUND.value());
-        claimResponse.setMsg("Claim Deleted Succesfully");
+
+        updateClaim.setClaimNumber(claim.getClaimNumber());
+        updateClaim.setClaimDate(claim.getClaimDate());
+        updateClaim.setClaimDescription(claim.getClaimDescription());
+        updateClaim.setClaimStatus(claim.getClaimStatus());
+
+        claimResponse.setStatusCode(HttpStatus.ACCEPTED.value());
+        claimResponse.setMsg("Claim updated Successfully");
         claimResponse.setData(claim);
 
         return claimResponse;
+    }
+
+    public ApiResponse<List<Claim>> displayAllClaim(){
+    List<Claim> claims =  claimDAO.displayAllClaim();
+
+    if (Objects.isNull(claims)){
+        findAllClaimResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+        findAllClaimResponse.setMsg("Claim Details are not available");
+        findAllClaimResponse.setData(null);
+    } else {
+        findAllClaimResponse.setStatusCode(HttpStatus.FOUND.value());
+        findAllClaimResponse.setMsg("Claim Details are  available");
+        findAllClaimResponse.setData(claims);
+    }
+    return findAllClaimResponse;
     }
 }

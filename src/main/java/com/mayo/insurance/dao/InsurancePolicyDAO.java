@@ -42,4 +42,8 @@ public class InsurancePolicyDAO {
     public List<InsurancePolicy> displayAllInsurancePolicy(){
         return insurancePolicyRepository.findAll();
     }
+
+    public InsurancePolicy insertInsurancePolicy(InsurancePolicy insurancePolicy) {
+        return insurancePolicyRepository.save(insurancePolicy);
+    }
 }
