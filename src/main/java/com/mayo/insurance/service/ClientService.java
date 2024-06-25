@@ -3,6 +3,7 @@ package com.mayo.insurance.service;
 import com.mayo.insurance.dao.ClientDAO;
 import com.mayo.insurance.dao.InsurancePolicyDAO;
 import com.mayo.insurance.dto.ApiResponse;
+import com.mayo.insurance.dto.Claim;
 import com.mayo.insurance.dto.Client;
 import com.mayo.insurance.dto.InsurancePolicy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,26 +72,6 @@ public class ClientService {
         return clientResponse;
     }
 
-    public ApiResponse<Client> updateClaim(Client client){
-        Client updateClient = clientDAO.getClientId(client.getClientId());
-
-        if (Objects.isNull(updateClient)){
-            throw  new RuntimeException("Claim details not found");
-        }
-
-        updateClient.setClientName(client.getClientName());
-        updateClient.setClientAddress(client.getClientAddress());
-        updateClient.setClientContactInformation(client.getClientContactInformation());
-        updateClient.setClientDateOfBirth(client.getClientDateOfBirth());
-
-        clientDAO.updateClient(client);
-
-        clientResponse.setStatusCode(HttpStatus.ACCEPTED.value());
-        clientResponse.setMsg("Client updated Successfully");
-        clientResponse.setData(client);
-
-        return clientResponse;
-    }
 
     public ApiResponse<List<Client>> displayAllClient(){
         List<Client> clients =  clientDAO.displayAllClient();
@@ -105,6 +86,25 @@ public class ClientService {
             findAllClientResponse.setData(clients);
         }
         return findAllClientResponse;
+    }
+
+    public ApiResponse<Client> updateClient(Client client) {
+        Client updateClient = clientDAO.getClientId(client.getClientId());
+
+        if (Objects.isNull(updateClient)){
+            throw  new RuntimeException("Claim details not found");
+        }
+
+        updateClient.setClientDateOfBirth(client.getClientDateOfBirth());
+        updateClient.setClientName(client.getClientName());
+        updateClient.setClientContactInformation(client.getClientContactInformation());
+        updateClient.setClientAddress(client.getClientAddress());
+
+        clientResponse.setStatusCode(HttpStatus.ACCEPTED.value());
+        clientResponse.setMsg("Claim updated Successfully");
+        clientResponse.setData(client);
+
+        return clientResponse;
     }
 }
 
